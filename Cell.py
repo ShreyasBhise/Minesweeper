@@ -13,4 +13,4 @@ class Cell:
         return '({self.x}, {self.y})'.format(self=self)
 
     def __repr__(self):
-        return '({self.x}, {self.y}) {self.bomb}'.format(self=self)
+        return '{self.bomb} {self.num_bombs}'.format(self=self)

@@ -1,6 +1,6 @@
 from Minefield import Grid
 from Cell import Cell
-import pygame
+import pygame, pprint
 
-mines = Grid(3, 10)
-print(mines.field)
+mines = Grid(3, 5)
+pprint.pprint(mines.field)
