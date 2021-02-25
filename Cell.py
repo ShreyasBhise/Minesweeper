@@ -5,8 +5,9 @@ class Cell:
         self.y = y
         self.bomb = False
         self.clicked = False
-
+        self.flagged = False
         self.num_bombs = 0
+        self.num_safe = 0
 
 
     def __str__(self):
