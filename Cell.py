@@ -4,7 +4,7 @@ class Cell:
         self.x = x
         self.y = y
         self.bomb = False
-        self.clicked = False
+        self.queried = False
         self.flagged = False
         self.num_bombs = 0
         self.num_safe = 0
@@ -14,4 +14,5 @@ class Cell:
         return '({self.x}, {self.y})'.format(self=self)
 
     def __repr__(self):
-        return '{self.bomb} {self.num_bombs}'.format(self=self)
+        return '({self.x}, {self.y})'.format(self=self)
+        # return '{self.bomb} {self.num_bombs}'.format(self=self)

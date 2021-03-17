@@ -1,5 +1,5 @@
 from Cell import Cell
-import random as rnd
+import random as rnd, numpy as np
 class Grid:
     
     def set_mines(self):
@@ -30,11 +30,16 @@ class Grid:
                                 self.field[i][j].num_bombs += 1
                             else:
                                 self.field[i][j].num_safe += 1
+
     def __init__(self, dim, mines):
         self.dim = dim
         self.num_mines = mines
         self.neighbors = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
-        self.field = [[Cell(x, y) for x in range(self.dim)] for y in range(self.dim)]
+        self.field = np.ndarray(shape=(dim,dim), dtype=Cell)
+        for i in range(dim):
+            for j in range(dim):
+                self.field[i][j] = Cell(i,j)
+        # self.field = [[Cell(x, y) for x in range(self.dim)] for y in range(self.dim)]
         self.set_mines()
         self.set_info()
 
