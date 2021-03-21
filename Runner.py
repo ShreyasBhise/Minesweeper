@@ -44,7 +44,7 @@ def get_queried_pos(pos):
     return pos[0] // gap, pos[1]//gap
 
 dim = 10
-num_mines = 0.05 * 100
+num_mines = 20
 
 size = width, height = 800, 800 
 
@@ -87,7 +87,7 @@ while game:
         #     ines.field[pos[0]][pos[1]].flagged = True
         #     update_ui()
     
-    basic_agent(mines, queue) #########################
+    advanced_agent(mines, queue) #########################
     update_ui()
     for i in range(dim):
         for j in range(dim):

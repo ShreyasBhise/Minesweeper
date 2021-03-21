@@ -143,12 +143,15 @@ def educated_guess(mines, queue):
 
             least = cell if cell_percent > least_percent else least
     
-    return random_neighbor(mines, least)
+    query = random_neighbor(mines, least)
+    query.queried = True
+
+    return query
 
 def random_neighbor(mines, cell):
-    neighbor = mines.neighbor[rnd.randint(0, len(mines.neighbors))]
+    neighbor = mines.neighbors[rnd.randint(0, len(mines.neighbors) - 1)]
     while cell.x + neighbor[0] < 0 or cell.x + neighbor[0] >= mines.dim or cell.y + neighbor[1] < 0 or cell.y + neighbor[1] >= mines.dim:
-        neighbor = mines.neighbor[rnd.randint(0, len(mines.neighbors))]
+        neighbor = mines.neighbors[rnd.randint(0, len(mines.neighbors) -1 )]
 
     return mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]]
 
