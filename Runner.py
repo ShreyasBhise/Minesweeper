@@ -43,8 +43,8 @@ def get_queried_pos(pos):
     gap = width // dim
     return pos[0] // gap, pos[1]//gap
 
-dim = 50
-num_mines = 700
+dim = 10
+num_mines = 0.05 * 100
 
 size = width, height = 800, 800 
 

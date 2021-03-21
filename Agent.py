@@ -42,8 +42,8 @@ def basic_agent_util(mines, queue):
     return False
 
 def advanced_agent(mines, queue):
-    basicWorked = basic_agent_util(mines, queue)
-    if basicWorked: # in this case, the basic agent was able to make an inferrence
+    basic_worked = basic_agent_util(mines, queue)
+    if basic_worked: # in this case, the basic agent was able to make an inferrence
         return
     # Now, create matrix to represent all equations
     tiles = []
@@ -86,27 +86,21 @@ def advanced_agent(mines, queue):
                 system_matrix[i][key[x][y]] = 1
         # n is now equal to number of undiscovered mines
         system_matrix[i][count] = n
-    #print(tiles)
-    print(system_matrix)
+  
     if count>0:
-        #(_, rref) = la.qr(system_matrix)
-        #print(rref)
         rref = Matrix(system_matrix)
         rref = rref.rref()
-        print(rref)
+        
         new_matrix = np.array(rref[0], dtype=float)
-        print(new_matrix)
+        
         for i in range(len(queue)):
-            #row = rref[0].row(i)
             posval = 0
             negval = 0
             for j in range(count):
                 if new_matrix[i][j]>0: posval = posval+new_matrix[i][j]
                 else: negval = negval+new_matrix[i][j]
             val = new_matrix[i][count]
-            print(val)
-            print(posval)
-            print(negval)
+            
             if val==0 and posval==0 and negval==0:
                 continue
             if(val==posval):
@@ -123,7 +117,7 @@ def advanced_agent(mines, queue):
                         tiles[j].queried = True
                         if not tiles[j].bomb: queue.append(tiles[j])
                 return
-    print('guessing')
+
     guess = guess_query(mines)
     if not guess.bomb:
         queue.append(guess)
