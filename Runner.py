@@ -87,7 +87,7 @@ while game:
         #     ines.field[pos[0]][pos[1]].flagged = True
         #     update_ui()
     
-    advanced_agent(mines, queue) #########################
+    basic_agent(mines, queue) #########################
     update_ui()
     for i in range(dim):
         for j in range(dim):

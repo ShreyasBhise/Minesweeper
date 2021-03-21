@@ -1,6 +1,7 @@
 from Cell import Cell
 from Minefield import Grid
 import Agent as a, numpy as np
+import matplotlib.pyplot as plt
 
 def count_safe_bomb(grid):
     safe_query = 0
@@ -43,7 +44,7 @@ for i in density[1:]:
                 
             successB += count_safe_bomb(map)
             reset_board(map)
-      #  print('B', successB, num_bombs)
+        print('B:', successB, num_bombs)
         successA = 0
         for _ in range(5):
             queue = []
@@ -52,10 +53,19 @@ for i in density[1:]:
             
             successA += count_safe_bomb(map)
             reset_board(map)
-       # print('A:', successA, num_bombs)
+        print('A:', successA, num_bombs)
     
     basic.append(successB / (num_bombs * 25))
     advanced.append(successA / (num_bombs * 25))
 
 print(basic)
 print(advanced)
+
+plt.title('Basic vs. Advanced - Size = {map_dim}')
+plt.plot(density, basic, '-ro', label = 'Basic')
+plt.plot(density, advanced, '-bo', label = 'Advanced')
+plt.legend()
+
+plt.xlabel('Mine Density')
+plt.ylable('Average Score - 5 tests/minefield')
+plt.show()

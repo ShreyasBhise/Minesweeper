@@ -19,7 +19,9 @@ def basic_agent(mines, queue):
             if nb.queried:
                 queue.append(nb)
         return 
-    guess = guess_query(mines)
+    guess = educated_guess(mines, queue)
+    if guess is None:
+        guess = guess_query(mines)
     if not guess.bomb:
         queue.append(guess)
 
@@ -100,7 +102,7 @@ def advanced_agent(mines, queue):
                 if new_matrix[i][j]>0: posval = posval+new_matrix[i][j]
                 else: negval = negval+new_matrix[i][j]
             val = new_matrix[i][count]
-            
+
             if val==0 and posval==0 and negval==0:
                 continue
             if(val==posval):
@@ -117,11 +119,51 @@ def advanced_agent(mines, queue):
                         tiles[j].queried = True
                         if not tiles[j].bomb: queue.append(tiles[j])
                 return
+    
+    guess = educated_guess(mines, queue)
 
-    guess = guess_query(mines)
+    if guess is None:
+        guess = guess_query(mines)
     if not guess.bomb:
         queue.append(guess)
+
         
+def educated_guess(mines, queue):
+    if not queue:
+        return None
+    least = None
+    for cell in queue:
+        if not least:
+            least = cell
+        else:
+            cell_info = get_bombs_left(mines, cell)
+            least_info =  get_bombs_left(mines, least)
+            cell_percent = cell_info[1]/(cell_info[1] + cell_info[0])
+            least_percent = least_info[1]/(least_info[0] + least_info[1])
+
+            least = cell if cell_percent > least_percent else least
+    
+    return random_neighbor(mines, least)
+
+def random_neighbor(mines, cell):
+    neighbor = mines.neighbor[rnd.randint(0, len(mines.neighbors))]
+    while cell.x + neighbor[0] < 0 or cell.x + neighbor[0] >= mines.dim or cell.y + neighbor[1] < 0 or cell.y + neighbor[1] >= mines.dim:
+        neighbor = mines.neighbor[rnd.randint(0, len(mines.neighbors))]
+
+    return mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]]
+
+def get_bombs_left(mines, cell):
+    bombs = cell.num_bombs
+    safe = cell.num_safe
+    for neighbor in mines.neighbors:
+        if cell.x + neighbor[0] >= 0 and cell.x + neighbor[0] < mines.dim and cell.y + neighbor[1] >= 0 and cell.y + neighbor[1] < mines.dim:
+            nb = mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]]    
+            if nb.flagged or (nb.queried and nb.bomb):
+                bombs -= 1
+            if (nb.queried and not nb.bomb):
+                safe -= 1
+
+    return (bombs, safe)
 
 def guess_query(mines):
     rand_x = rnd.randint(0, mines.dim - 1)
