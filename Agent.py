@@ -1,5 +1,6 @@
 from Cell import Cell
 from Minefield import Grid
+from sympy import *
 import random as rnd, numpy as np
 
 def basic_agent(mines, queue):
@@ -18,10 +19,115 @@ def basic_agent(mines, queue):
             if nb.queried:
                 queue.append(nb)
         return 
-    
     guess = guess_query(mines)
     if not guess.bomb:
         queue.append(guess)
+
+def basic_agent_util(mines, queue):
+    count = 0
+    length = len(queue)
+    while queue and count<length:
+        count += 1
+        cell = queue.pop(0)
+        (neighbors, is_safe) = search_neighbors(cell, mines)
+        if is_safe is None:
+            queue.append(cell)
+            continue
+        for nb in neighbors:
+            nb.queried = is_safe
+            nb.flagged = not is_safe
+            if nb.queried:
+                queue.append(nb)
+        return True
+    return False
+
+def advanced_agent(mines, queue):
+    basicWorked = basic_agent_util(mines, queue)
+    if basicWorked: # in this case, the basic agent was able to make an inferrence
+        return
+    # Now, create matrix to represent all equations
+    tiles = []
+    count = 0
+    key = np.ndarray(shape=(mines.dim,mines.dim), dtype=int)
+    for i in range(mines.dim):
+        for j in range(mines.dim):
+            key[i][j]=-1
+    for i in range(len(queue)): # adds all of the unique tiles in system of equations to tiles[]
+        cell = queue[i]
+        for neighbor in mines.neighbors:
+            if cell.x + neighbor[0] >= 0 and cell.x + neighbor[0] < mines.dim and cell.y + neighbor[1] >= 0 and cell.y + neighbor[1] < mines.dim:
+                nb = mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]]
+                if (mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]].queried or mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]].flagged):
+                    continue    
+                if(key[cell.x + neighbor[0]][cell.y + neighbor[1]]>=0):
+                    continue
+                tiles.append(nb)
+                key[cell.x + neighbor[0]][cell.y + neighbor[1]] = count
+                count = count+1
+    system_matrix = np.ndarray(shape=(len(queue),count+1))
+    for i in range(len(queue)):
+        for j in range(count+1):
+            system_matrix[i][j] = 0
+    for i in range(len(queue)): # adds all of the systems of equations into system_matrix
+        cell = queue[i]
+        n = cell.num_bombs
+        for neighbor in mines.neighbors:
+            x = cell.x + neighbor[0]
+            y = cell.y + neighbor[1]
+            if cell.x + neighbor[0] >= 0 and cell.x + neighbor[0] < mines.dim and cell.y + neighbor[1] >= 0 and cell.y + neighbor[1] < mines.dim:
+                if mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]].queried:
+                    if(mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]].bomb):
+                        n = n-1
+                    continue
+                if mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]].flagged:
+                    n = n-1
+                    continue
+                tile = tiles[key[x][y]] 
+                system_matrix[i][key[x][y]] = 1
+        # n is now equal to number of undiscovered mines
+        system_matrix[i][count] = n
+    #print(tiles)
+    print(system_matrix)
+    if count>0:
+        #(_, rref) = la.qr(system_matrix)
+        #print(rref)
+        rref = Matrix(system_matrix)
+        rref = rref.rref()
+        print(rref)
+        new_matrix = np.array(rref[0], dtype=float)
+        print(new_matrix)
+        for i in range(len(queue)):
+            #row = rref[0].row(i)
+            posval = 0
+            negval = 0
+            for j in range(count):
+                if new_matrix[i][j]>0: posval = posval+new_matrix[i][j]
+                else: negval = negval+new_matrix[i][j]
+            val = new_matrix[i][count]
+            print(val)
+            print(posval)
+            print(negval)
+            if val==0 and posval==0 and negval==0:
+                continue
+            if(val==posval):
+                for j in range(count):
+                    if(new_matrix[i][j]>0): tiles[j].flagged = True
+                    elif(new_matrix[i][j]<0):
+                        tiles[j].queried = True
+                        if not tiles[j].bomb: queue.append(tiles[j])
+                return
+            elif(val==negval):
+                for j in range(count):
+                    if(new_matrix[i][j]<0): tiles[j].flagged = True
+                    elif(new_matrix[i][j]>0):
+                        tiles[j].queried = True
+                        if not tiles[j].bomb: queue.append(tiles[j])
+                return
+    print('guessing')
+    guess = guess_query(mines)
+    if not guess.bomb:
+        queue.append(guess)
+        
 
 def guess_query(mines):
     rand_x = rnd.randint(0, mines.dim - 1)

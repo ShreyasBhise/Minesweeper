@@ -1,4 +1,5 @@
 from Agent import basic_agent
+from Agent import advanced_agent
 from Minefield import Grid
 from Cell import Cell
 import pygame, pprint, sys, numpy as np, time
@@ -42,8 +43,8 @@ def get_queried_pos(pos):
     gap = width // dim
     return pos[0] // gap, pos[1]//gap
 
-dim = 10
-num_mines = 30
+dim = 50
+num_mines = 700
 
 size = width, height = 800, 800 
 
@@ -63,17 +64,30 @@ while game:
     pygame.time.Clock().tick(24)
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
-        if pygame.mouse.get_pressed()[0]:
+        #if pygame.mouse.get_pressed()[0]:
             # pos = get_queried_pos(pygame.mouse.get_pos())
             # mines.field[pos[0]][pos[1]].queried = True
-            update_ui()
-        if pygame.mouse.get_pressed()[2]:
-            pos = get_queried_pos(pygame.mouse.get_pos())
-            mines.field[pos[0]][pos[1]].flagged = True
-            update_ui()
+        #     advanced_agent(mines, queue) #########################
+        #     #print(queue)
+        #     update_ui()
+        #     for i in range(dim):
+        #         for j in range(dim):
+        #             if mines.field[i][j].queried or mines.field[i][j].flagged:
+        #                 counter+=1
+        #     #print(counter)
+        #     if counter == dim**2:
+        #         game = False
+        #         break
+        #     else:
+        #         counter = 0
+        #         time.sleep(1)
+        #     update_ui()
+        # if pygame.mouse.get_pressed()[2]:
+        #     pos = get_queried_pos(pygame.mouse.get_pos())
+        #     ines.field[pos[0]][pos[1]].flagged = True
+        #     update_ui()
     
-    basic_agent(mines, queue)
-    print(queue)
+    advanced_agent(mines, queue) #########################
     update_ui()
     for i in range(dim):
         for j in range(dim):
@@ -85,7 +99,7 @@ while game:
         break
     else:
         counter = 0
-    time.sleep(1)
+    #time.sleep(0.5)
 
 correct_flag = 0
 incorrect_flag = 0
