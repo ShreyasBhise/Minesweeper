@@ -3,11 +3,13 @@ import random as rnd, numpy as np
 class Grid:
     
     def set_mines(self):
+        #More mines than entire board
         if self.num_mines > self.dim ** 2:
             print('Illegal number of mines')
             self.num_mines = self.dim ** 2
         mine_cnt = self.num_mines
 
+        #Set mines to random locations in cells
         while mine_cnt > 0:
             rand_x = rnd.randint(0, self.dim - 1)
             rand_y = rnd.randint(0, self.dim - 1)
@@ -19,6 +21,7 @@ class Grid:
             
             mine_cnt -= 1
 
+    #Set value for number of mines in surrounding cells
     def set_info(self):
         for i in range(self.dim):
             for j in range(self.dim):

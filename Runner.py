@@ -67,7 +67,7 @@ while game:
         if pygame.mouse.get_pressed()[0]:
             # pos = get_queried_pos(pygame.mouse.get_pos())
             # mines.field[pos[0]][pos[1]].queried = True
-            basic_agent(mines, queue, True) #########################
+            advanced_agent(mines, queue, False) #########################
             #print(queue)
             update_ui()
             for i in range(dim):
@@ -80,11 +80,10 @@ while game:
                 break
             else:
                 counter = 0
-                time.sleep(1)
             update_ui()
         if pygame.mouse.get_pressed()[2]:
             pos = get_queried_pos(pygame.mouse.get_pos())
-            ines.field[pos[0]][pos[1]].flagged = True
+            mines.field[pos[0]][pos[1]].flagged = True
             update_ui()
     
     # advanced_agent(mines, queue, False) #########################

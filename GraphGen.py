@@ -41,32 +41,32 @@ for i in density:
         map = Grid(map_dim, num_bombs)
 
         #Solve 5 times with basic agent and 5 times with advanced agent
-        for j in range(3):
+        for j in range(5):
             queue = []
             while count_moves(map) != map_dim ** 2:
-               a.basic_agent(map, queue, False)
+               a.advanced_agent(map, queue, False)
                
             successB += count_safe_bomb(map)
             reset_board(map)
             print('B:', i, j, successB, num_bombs)
-        for j in range(3):
+        for j in range(5):
             queue = []
             while count_moves(map) != map_dim ** 2:
-                a.advanced_agent(map, queue, False)
+                a.advanced_agent(map, queue, True)
             
             successA += count_safe_bomb(map)
             reset_board(map)
             print('A:',i, j, successA, num_bombs)
     
-    basic.append(successB/(num_bombs *9 ))
-    advanced.append(successA/(num_bombs * 9))
+    basic.append(successB/(num_bombs * 15 ))
+    advanced.append(successA/(num_bombs * 15))
 
 print(basic)
 print(advanced)
 
-plt.title('Basic vs. Advanced - Size = 20')
-plt.plot(density, basic, '-ro', label = 'Basic')
-plt.plot(density, advanced, '-bo', label = 'Advanced')
+plt.title('Advanced - Better Guessing - Size = 30')
+plt.plot(density, basic, '-ro', label = 'Advanced - Random Guessing')
+plt.plot(density, advanced, '-bo', label = 'Advanced - Better Guessing')
 plt.legend()
 
 plt.xlabel('Mine Density')

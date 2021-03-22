@@ -4,21 +4,32 @@ from sympy import *
 import random as rnd, numpy as np
 
 def basic_agent(mines, queue, better_guess):
+    #Counts number of queried and flagged cells for win condition
     count = 0
+    
     length = len(queue)
     while queue and count<length:
         count += 1
         cell = queue.pop(0)
+
+        #Tuple representing 1. list of neighboring cells that are not flagged or found bombs, 2. If these neighbors are safe or bombs
         (neighbors, is_safe) = search_neighbors(cell, mines)
+
+        #Can not make a definitive decision based on single cell's information
         if is_safe is None:
             queue.append(cell)
             continue
+
+        #Query neighboring cells or flag neighboring cells
         for nb in neighbors:
             nb.queried = is_safe
             nb.flagged = not is_safe
+            #Append safe cells
             if nb.queried:
                 queue.append(nb)
         return
+    
+    #Make a guess if the queue is empty
     guess = None
     if better_guess:
         guess = educated_guess(mines, queue)
@@ -28,6 +39,7 @@ def basic_agent(mines, queue, better_guess):
     if not guess.bomb:
         queue.append(guess)
 
+#Basic agent method but returns True if it can make a definite deduction and false otherwise
 def basic_agent_util(mines, queue):
     count = 0
     length = len(queue)
@@ -48,8 +60,11 @@ def basic_agent_util(mines, queue):
 
 def advanced_agent(mines, queue, better_guess):
     basic_worked = basic_agent_util(mines, queue)
-    if basic_worked: # in this case, the basic agent was able to make an inferrence
+    
+    # in this case, the basic agent was able to make a calculation
+    if basic_worked: 
         return
+
     # Now, create matrix to represent all equations
     tiles = []
     count = 0
@@ -131,7 +146,7 @@ def advanced_agent(mines, queue, better_guess):
     if not guess.bomb:
         queue.append(guess)
 
-        
+#Randomly queries the least likely bomb from nearby neighbors
 def educated_guess(mines, queue):
     if not queue:
         return None
@@ -159,6 +174,7 @@ def random_neighbor(mines, cell):
 
     return mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]]
 
+#returns the number of bombs and cells remaining
 def get_bombs_left(mines, cell):
     bombs = cell.num_bombs
     safe = cell.num_safe
@@ -176,10 +192,12 @@ def guess_query(mines):
     rand_x = rnd.randint(0, mines.dim - 1)
     rand_y = rnd.randint(0, mines.dim - 1)
     
+    #Finds cells that are unqueried and unflagged
     while mines.field[rand_x][rand_y].queried or mines.field[rand_x][rand_y].flagged:
         rand_x = rnd.randint(0, mines.dim - 1)
         rand_y = rnd.randint(0, mines.dim - 1)
 
+    #Queries random cell
     mines.field[rand_x][rand_y].queried = True
     return mines.field[rand_x][rand_y]
 
