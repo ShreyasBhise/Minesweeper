@@ -27,45 +27,48 @@ def reset_board(grid):
 
 
 map_dim = 30
-density = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0]
-basic = [map_dim ** 2]
-advanced = [map_dim ** 2]
-for i in density[1:]:
+density = [ 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+basic = []
+advanced = []
+
+
+
+for i in density:
     num_bombs = int(i * (map_dim ** 2))
-    for _ in range(5):
+    successA = 0
+    successB = 0
+    for _ in range(3):
         map = Grid(map_dim, num_bombs)
 
         #Solve 5 times with basic agent and 5 times with advanced agent
-        successB = 0
-        for j in range(5):
+        for j in range(3):
             queue = []
             while count_moves(map) != map_dim ** 2:
-                a.basic_agent(map, queue)
-                
+               a.basic_agent(map, queue, False)
+               
             successB += count_safe_bomb(map)
             reset_board(map)
-        print('B:', successB, num_bombs)
-        successA = 0
-        for _ in range(5):
+            print('B:', i, j, successB, num_bombs)
+        for j in range(3):
             queue = []
             while count_moves(map) != map_dim ** 2:
-                a.advanced_agent(map, queue)
+                a.advanced_agent(map, queue, False)
             
             successA += count_safe_bomb(map)
             reset_board(map)
-        print('A:', successA, num_bombs)
+            print('A:',i, j, successA, num_bombs)
     
-    basic.append(successB / (num_bombs * 25))
-    advanced.append(successA / (num_bombs * 25))
+    basic.append(successB/(num_bombs *9 ))
+    advanced.append(successA/(num_bombs * 9))
 
 print(basic)
 print(advanced)
 
-plt.title('Basic vs. Advanced - Size = {map_dim}')
+plt.title('Basic vs. Advanced - Size = 20')
 plt.plot(density, basic, '-ro', label = 'Basic')
 plt.plot(density, advanced, '-bo', label = 'Advanced')
 plt.legend()
 
 plt.xlabel('Mine Density')
-plt.ylable('Average Score - 5 tests/minefield')
+plt.ylabel('Average Score - 5 tests/minefield')
 plt.show()

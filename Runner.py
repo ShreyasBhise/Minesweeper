@@ -64,41 +64,41 @@ while game:
     pygame.time.Clock().tick(24)
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
-        #if pygame.mouse.get_pressed()[0]:
+        if pygame.mouse.get_pressed()[0]:
             # pos = get_queried_pos(pygame.mouse.get_pos())
             # mines.field[pos[0]][pos[1]].queried = True
-        #     advanced_agent(mines, queue) #########################
-        #     #print(queue)
-        #     update_ui()
-        #     for i in range(dim):
-        #         for j in range(dim):
-        #             if mines.field[i][j].queried or mines.field[i][j].flagged:
-        #                 counter+=1
-        #     #print(counter)
-        #     if counter == dim**2:
-        #         game = False
-        #         break
-        #     else:
-        #         counter = 0
-        #         time.sleep(1)
-        #     update_ui()
-        # if pygame.mouse.get_pressed()[2]:
-        #     pos = get_queried_pos(pygame.mouse.get_pos())
-        #     ines.field[pos[0]][pos[1]].flagged = True
-        #     update_ui()
+            basic_agent(mines, queue, True) #########################
+            #print(queue)
+            update_ui()
+            for i in range(dim):
+                for j in range(dim):
+                    if mines.field[i][j].queried or mines.field[i][j].flagged:
+                        counter+=1
+            #print(counter)
+            if counter == dim**2:
+                game = False
+                break
+            else:
+                counter = 0
+                time.sleep(1)
+            update_ui()
+        if pygame.mouse.get_pressed()[2]:
+            pos = get_queried_pos(pygame.mouse.get_pos())
+            ines.field[pos[0]][pos[1]].flagged = True
+            update_ui()
     
-    advanced_agent(mines, queue) #########################
-    update_ui()
-    for i in range(dim):
-        for j in range(dim):
-            if mines.field[i][j].queried or mines.field[i][j].flagged:
-                counter+=1
-    print(counter)
-    if counter == dim**2:
-        game = False
-        break
-    else:
-        counter = 0
+    # advanced_agent(mines, queue, False) #########################
+    # update_ui()
+    # for i in range(dim):
+    #     for j in range(dim):
+    #         if mines.field[i][j].queried or mines.field[i][j].flagged:
+    #             counter+=1
+    # print(counter)
+    # if counter == dim**2:
+    #     game = False
+    #     break
+    # else:
+    #     counter = 0
     #time.sleep(0.5)
 
 correct_flag = 0

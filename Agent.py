@@ -3,7 +3,7 @@ from Minefield import Grid
 from sympy import *
 import random as rnd, numpy as np
 
-def basic_agent(mines, queue):
+def basic_agent(mines, queue, better_guess):
     count = 0
     length = len(queue)
     while queue and count<length:
@@ -18,8 +18,11 @@ def basic_agent(mines, queue):
             nb.flagged = not is_safe
             if nb.queried:
                 queue.append(nb)
-        return 
-    guess = educated_guess(mines, queue)
+        return
+    guess = None
+    if better_guess:
+        guess = educated_guess(mines, queue)
+    
     if guess is None:
         guess = guess_query(mines)
     if not guess.bomb:
@@ -43,7 +46,7 @@ def basic_agent_util(mines, queue):
         return True
     return False
 
-def advanced_agent(mines, queue):
+def advanced_agent(mines, queue, better_guess):
     basic_worked = basic_agent_util(mines, queue)
     if basic_worked: # in this case, the basic agent was able to make an inferrence
         return
@@ -120,8 +123,9 @@ def advanced_agent(mines, queue):
                         if not tiles[j].bomb: queue.append(tiles[j])
                 return
     
-    guess = educated_guess(mines, queue)
-
+    guess = None
+    if better_guess:
+        guess = educated_guess(mines, queue)
     if guess is None:
         guess = guess_query(mines)
     if not guess.bomb:
