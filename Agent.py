@@ -68,6 +68,8 @@ def advanced_agent(mines, queue, better_guess):
     # Now, create matrix to represent all equations
     tiles = []
     count = 0
+
+    #Key maps from coordinate in mines.field onto the cell in tiles[]
     key = np.ndarray(shape=(mines.dim,mines.dim), dtype=int)
     for i in range(mines.dim):
         for j in range(mines.dim):
@@ -84,6 +86,7 @@ def advanced_agent(mines, queue, better_guess):
                 tiles.append(nb)
                 key[cell.x + neighbor[0]][cell.y + neighbor[1]] = count
                 count = count+1
+    
     system_matrix = np.ndarray(shape=(len(queue),count+1))
     for i in range(len(queue)):
         for j in range(count+1):
@@ -95,6 +98,7 @@ def advanced_agent(mines, queue, better_guess):
             x = cell.x + neighbor[0]
             y = cell.y + neighbor[1]
             if cell.x + neighbor[0] >= 0 and cell.x + neighbor[0] < mines.dim and cell.y + neighbor[1] >= 0 and cell.y + neighbor[1] < mines.dim:
+                #Subtracts num of cells left for each discovered bomb
                 if mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]].queried:
                     if(mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]].bomb):
                         n = n-1
@@ -102,18 +106,24 @@ def advanced_agent(mines, queue, better_guess):
                 if mines.field[cell.x + neighbor[0]][cell.y + neighbor[1]].flagged:
                     n = n-1
                     continue
+
+                #Now an uncovered tile
                 tile = tiles[key[x][y]] 
                 system_matrix[i][key[x][y]] = 1
+
         # n is now equal to number of undiscovered mines
         system_matrix[i][count] = n
   
-    if count>0:
+    #If count is zero, there are no undiscovered tiles within neighbors of the queue
+    if count>0: 
         rref = Matrix(system_matrix)
+        #Compute reduced row echelon form of the matrix
         rref = rref.rref()
         
         new_matrix = np.array(rref[0], dtype=float)
         
         for i in range(len(queue)):
+            #sum of positive and negative values in row i respectively
             posval = 0
             negval = 0
             for j in range(count):
@@ -121,8 +131,11 @@ def advanced_agent(mines, queue, better_guess):
                 else: negval = negval+new_matrix[i][j]
             val = new_matrix[i][count]
 
+            #In the case that all values are zero, nothing can be inferred
             if val==0 and posval==0 and negval==0:
                 continue
+            
+            #Only solution is when all positive values correspond to 1s and negative values are 0s
             if(val==posval):
                 for j in range(count):
                     if(new_matrix[i][j]>0): tiles[j].flagged = True
@@ -130,6 +143,8 @@ def advanced_agent(mines, queue, better_guess):
                         tiles[j].queried = True
                         if not tiles[j].bomb: queue.append(tiles[j])
                 return
+
+            #Solution is when all positive values correspond to 0s and negative values are 1s
             elif(val==negval):
                 for j in range(count):
                     if(new_matrix[i][j]<0): tiles[j].flagged = True
@@ -138,6 +153,7 @@ def advanced_agent(mines, queue, better_guess):
                         if not tiles[j].bomb: queue.append(tiles[j])
                 return
     
+    #Otherwise make a guess
     guess = None
     if better_guess:
         guess = educated_guess(mines, queue)
